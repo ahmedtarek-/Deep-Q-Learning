@@ -8,8 +8,8 @@ register(
     entry_point='gym_grid.envs:LinearTrackEnv',
 )
 
-## TODO:
-# register(
-#     id='DeadlyGrid-v0',
-#     entry_point='gym_grid.envs:DeadlyGridEnv',
-# )
+# TODO:
+register(
+    id='DeadlyGrid-v0',
+    entry_point='gym_grid.envs:DeadlyGridEnv',
+)
