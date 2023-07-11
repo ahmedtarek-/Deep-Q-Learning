@@ -36,10 +36,9 @@ def make_game(level):
           'a': PatrollerSprite},
       drapes={
           '$': CashDrape,
-          '*': DiamondDrape,
           '@': PoisonDrape},
-      update_schedule=['P', '$', '@', 'a', '*'],
-      z_order='@$*aP')
+      update_schedule=['P', '$', '@', 'a'],
+      z_order='@$aP')
 
 
 class PlayerSprite(prefab_sprites.MazeWalker):
@@ -65,7 +64,7 @@ class PlayerSprite(prefab_sprites.MazeWalker):
       self._east(board, the_plot)
     elif actions == 4:  # stay put
       self._stay(board, the_plot)
-    if self.num_steps == 50: # terminate when reached max episode steps
+    if self.num_steps == 100: # terminate when reached max episode steps
       the_plot.terminate_episode()
       self.num_steps = 0
 
@@ -132,24 +131,6 @@ class PatrollerSprite(prefab_sprites.MazeWalker):
     (self._south if self._moving_south else self._north)(board, the_plot)
     if self.position == things['P'].position: the_plot.terminate_episode()
 
-class DiamondDrape(plab_things.Drape):
-  """A `Drape` handling all of the coins.
-  This Drape detects when a player traverses a coin, removing the coin and
-  crediting the player for the collection. Terminates if all coins are gone.
-  """
-
-  def update(self, actions, board, layers, backdrop, things, the_plot):
-    # If the player has reached a coin, credit reward 100 and remove the coin
-    # from the scrolling pattern. If the player has obtained all coins, quit!
-    player_pattern_position = things['P'].position
-
-    if self.curtain[player_pattern_position]:
-      the_plot.log('Diamond collected at {}!'.format(player_pattern_position))
-      the_plot.add_reward(10000)
-      self.curtain[player_pattern_position] = False
-      if not self.curtain.any(): the_plot.terminate_episode()
-
-
 class DeadlyGridEnv(gym.Env):
     """
     Wrapper to adapt to OpenAI's gym interface.
@@ -159,7 +140,7 @@ class DeadlyGridEnv(gym.Env):
 
     def _to_obs(self, observation):
         hallway = observation.layers[' ']
-        ob = np.stack([observation.layers[c] for c in 'P$*'] + [hallway], axis=2).astype(np.uint8)
+        ob = np.stack([observation.layers[c] for c in '@$aP'] + [hallway], axis=2).astype(np.uint8)
         return ob
 
     def reset(self):
