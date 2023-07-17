@@ -1,32 +1,33 @@
 import numpy as np
 
 class ExperienceBatch():
-  def __init__(self, current_states, actions, rewards, next_states) -> None:
+  def __init__(self, current_states, actions, rewards, next_states, done) -> None:
     self.current_states = current_states
     self.actions = actions
     self.rewards = rewards
     self.next_states = next_states
+    self.done = done
 
-  def current_states(self):
-    return self.current_states
+  def get_current_states(self):
+    return torch.Tensor(self.current_states)
 
-  def actions(self):
+  def get_actions(self):
     return self.actions
 
-  def rewards(self):
+  def get_rewards(self):
     return self.rewards
 
-  def next_states(self):
-    return self.next_states
+  def get_next_states(self):
+    return torch.Tensor(self.next_states)
 
-  def size(self):
-    return self.actions.shape[0]
+  def get_done(self):
+    return self.done  
 
   def items(self):
     """
     ACHTUNG: not so effecient; more for testing than using in training
     """
-    return list(zip(self.current_states, self.actions, self.rewards, self.next_states))
+    return list(zip(self.current_states, self.actions, self.rewards, self.next_states, self.done))
 
 
 class ExperienceBuffer():
@@ -42,6 +43,10 @@ class ExperienceBuffer():
             - Action is a scalar value
             - Then the shape will be (420, 1, 1, 420)
         - capacity: Defines the total capacity of the buffer
+
+      Internal Represenation:
+        - We define an empty numpy arrays with value (-1) to represent empty record
+          and populate them with values as the buffer gets filled
     """
     self.capacity = capacity
     self.current_index = 0
@@ -49,12 +54,14 @@ class ExperienceBuffer():
     self.actions = np.zeros((capacity, shape[1])) - 1
     self.rewards = np.zeros((capacity, shape[2])) - 1
     self.next_states = np.zeros((capacity, shape[3])) - 1
+    self.done = np.zeros((capacity, shape[4])) - 1
 
-  def add(self, current_state: list[int], action: int, reward: int, next_state: list[int]) -> None:
+  def add(self, current_state: list[int], action: int, reward: int, next_state: list[int], done: int) -> None:
     self.current_states[self.current_index] = current_state
     self.actions[self.current_index] = action
     self.rewards[self.current_index] = reward
     self.next_states[self.current_index] = next_state
+    self.done[self.current_index] = done
     
     self.update_index()
 
@@ -76,8 +83,13 @@ class ExperienceBuffer():
     items from the buffer.
     """
     if self.size() <= batch_size:
+      # Case A: Current buffer size is smaller than requested => Return all items
       indices = np.arange(0, self.size())
+    elif batch_size == 1:
+      # Case B: Requested batch size is 1 => Return last item
+      indices = [self.current_index]
     else:
+      # Case C: Requested batch size is smaller to buffer size => Sample from available items
       indices = np.random.randint(self.size(), size=batch_size)
     return ExperienceBatch(*self.items(indices))
 
@@ -88,7 +100,8 @@ class ExperienceBuffer():
     return (self.current_states[indices],
       self.actions[indices],
       self.rewards[indices],
-      self.next_states[indices]
+      self.next_states[indices],
+      self.done[indices]
     )
 
   def __str__(self) -> str:
