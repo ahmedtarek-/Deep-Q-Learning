@@ -1,0 +1,101 @@
+import numpy as np
+
+class ExperienceBatch():
+  def __init__(self, current_states, actions, rewards, next_states) -> None:
+    self.current_states = current_states
+    self.actions = actions
+    self.rewards = rewards
+    self.next_states = next_states
+
+  def current_states(self):
+    return self.current_states
+
+  def actions(self):
+    return self.actions
+
+  def rewards(self):
+    return self.rewards
+
+  def next_states(self):
+    return self.next_states
+
+  def size(self):
+    return self.actions.shape[0]
+
+  def items(self):
+    """
+    ACHTUNG: not so effecient; more for testing than using in training
+    """
+    return list(zip(self.current_states, self.actions, self.rewards, self.next_states))
+
+
+class ExperienceBuffer():
+  DEFAULT_BATCH_SIZE = 128
+
+  def __init__(self, shape: tuple[int], capacity: int = 1000) -> None:
+    """
+      Parameters:
+        - shape: Describes the size of each component.
+          Example:
+            - A 'state' is represented by 420 numbers
+            - Reward is a scalar value
+            - Action is a scalar value
+            - Then the shape will be (420, 1, 1, 420)
+        - capacity: Defines the total capacity of the buffer
+    """
+    self.capacity = capacity
+    self.current_index = 0
+    self.current_states = np.zeros((capacity, shape[0])) - 1
+    self.actions = np.zeros((capacity, shape[1])) - 1
+    self.rewards = np.zeros((capacity, shape[2])) - 1
+    self.next_states = np.zeros((capacity, shape[3])) - 1
+
+  def add(self, current_state: list[int], action: int, reward: int, next_state: list[int]) -> None:
+    self.current_states[self.current_index] = current_state
+    self.actions[self.current_index] = action
+    self.rewards[self.current_index] = reward
+    self.next_states[self.current_index] = next_state
+    
+    self.update_index()
+
+  def update_index(self) -> None:
+    """
+    Updates the index that is being used to populate the buffer; 
+    the 'current_index' is set to 0 whenever we reach the end of the buffer
+    to override the very first values that were added (FIFO).
+    """
+    if self.current_index == (self.capacity - 1):
+      self.current_index = 0
+    else:
+      self.current_index += 1
+
+  def get_next(self, batch_size: int = DEFAULT_BATCH_SIZE) -> ExperienceBatch:
+    """
+    If the buffer hasn't reached the 'buffer_size' yet, then we return a batch
+    representing all the data in the buffer. Otherwise we sample 'buffer_size' 
+    items from the buffer.
+    """
+    if self.size() <= batch_size:
+      indices = np.arange(0, self.size())
+    else:
+      indices = np.random.randint(self.size(), size=batch_size)
+    return ExperienceBatch(*self.items(indices))
+
+  def size(self) -> int:
+    return np.count_nonzero(self.actions != -1)
+
+  def items(self, indices=None) -> tuple:
+    return (self.current_states[indices],
+      self.actions[indices],
+      self.rewards[indices],
+      self.next_states[indices]
+    )
+
+  def __str__(self) -> str:
+    return f"""
+      Capacity: {self.capacity}
+      Size: {self.size()}
+      Current Index: {self.current_index}
+      Shape: ({self.current_states.shape[1]},{self.actions.shape[1]},{self.rewards.shape[1]},{self.next_states.shape[1]})
+    """
+
