@@ -90,7 +90,7 @@ class ExperienceBuffer():
       indices = [self.current_index - 1]
     else:
       # Case C: Requested batch size is smaller to buffer size => Sample from available items
-      indices = np.random.randint(self.size(), size=batch_size)
+      indices = np.random.choice(self.size(), size=batch_size, replace=False)
     return ExperienceBatch(*self.items(indices))
 
   def size(self) -> int:
