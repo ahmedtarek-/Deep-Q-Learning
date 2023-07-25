@@ -32,8 +32,9 @@ class ExperienceBatch():
 
 class ExperienceBuffer():
   DEFAULT_BATCH_SIZE = 128
+  DEFAULT_CAPACITY = 1000
 
-  def __init__(self, shape: tuple[int], capacity: int = 1000) -> None:
+  def __init__(self, shape: tuple[int], batch_size : int = DEFAULT_BATCH_SIZE, capacity: int = DEFAULT_CAPACITY) -> None:
     """
       Parameters:
         - shape: Describes the size of each component.
@@ -48,6 +49,7 @@ class ExperienceBuffer():
         - We define an empty numpy arrays with value (-1) to represent empty record
           and populate them with values as the buffer gets filled
     """
+    self.batch_size = batch_size
     self.capacity = capacity
     self.current_index = 0
     self.current_states = np.zeros((capacity, shape[0])) - 1
@@ -76,21 +78,21 @@ class ExperienceBuffer():
     else:
       self.current_index += 1
 
-  def get_next(self, batch_size: int = DEFAULT_BATCH_SIZE) -> ExperienceBatch:
+  def get_next(self) -> ExperienceBatch:
     """
     If the buffer hasn't reached the 'buffer_size' yet, then we return a batch
     representing all the data in the buffer. Otherwise we sample 'buffer_size' 
     items from the buffer.
     """
-    if self.size() <= batch_size:
+    if self.size() <= self.batch_size:
       # Case A: Current buffer size is smaller than requested => Return all items
       indices = np.arange(0, self.size())
-    elif batch_size == 1:
+    elif self.batch_size == 1:
       # Case B: Requested batch size is 1 => Return last item
       indices = [self.current_index - 1]
     else:
       # Case C: Requested batch size is smaller to buffer size => Sample from available items
-      indices = np.random.choice(self.size(), size=batch_size, replace=False)
+      indices = np.random.choice(self.size(), size=self.batch_size, replace=False)
     return ExperienceBatch(*self.items(indices))
 
   def size(self) -> int:
