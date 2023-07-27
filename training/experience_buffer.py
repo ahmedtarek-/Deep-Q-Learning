@@ -13,16 +13,16 @@ class ExperienceBatch():
     return torch.Tensor(self.current_states)
 
   def get_actions(self):
-    return self.actions
+    return torch.Tensor(self.actions)
 
   def get_rewards(self):
-    return self.rewards
+    return torch.Tensor(self.rewards)
 
   def get_next_states(self):
     return torch.Tensor(self.next_states)
 
   def get_done(self):
-    return self.done  
+    return torch.Tensor(self.done)  
 
   def items(self):
     """
@@ -35,7 +35,7 @@ class ExperienceBuffer():
   DEFAULT_BATCH_SIZE = 128
   DEFAULT_CAPACITY = 1000
 
-  def __init__(self, shape: tuple[int], batch_size : int = DEFAULT_BATCH_SIZE, capacity: int = DEFAULT_CAPACITY) -> None:
+  def __init__(self, shape, batch_size : int = DEFAULT_BATCH_SIZE, capacity: int = DEFAULT_CAPACITY) -> None:
     """
       Parameters:
         - shape: Describes the size of each component.
@@ -59,7 +59,7 @@ class ExperienceBuffer():
     self.next_states = np.zeros((capacity, shape[3])) - 1
     self.done = np.zeros((capacity, shape[4])) - 1
 
-  def add(self, current_state: list[int], action: int, reward: int, next_state: list[int], done: int) -> None:
+  def add(self, current_state, action: int, reward: int, next_state, done: int) -> None:
     self.current_states[self.current_index] = current_state
     self.actions[self.current_index] = action
     self.rewards[self.current_index] = reward
@@ -112,6 +112,6 @@ class ExperienceBuffer():
       Capacity: {self.capacity}
       Size: {self.size()}
       Current Index: {self.current_index}
-      Shape: ({self.current_states.shape[1]},{self.actions.shape[1]},{self.rewards.shape[1]},{self.next_states.shape[1]})
+      Shape: ({self.current_states.shape[1]},{self.actions.shape[1]},{self.rewards.shape[1]},{self.next_states.shape[1]}, {self.done.shape[1]})
     """
 
