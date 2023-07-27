@@ -1,0 +1,4 @@
+training_config:
+  learning_rate: 0.001
+  experience_replay: false
+  env_name: 'LinearTrack-v0'
