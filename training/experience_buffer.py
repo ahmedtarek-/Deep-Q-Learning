@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 class ExperienceBatch():
   def __init__(self, current_states, actions, rewards, next_states, done) -> None:

@@ -29,7 +29,7 @@ class Trainer():
     self.model = self.create_model()
 
     # Params that have defaults
-    self.loss_func = params.get("loss_function", self.DEFAULTS["loss_function"])
+    self.loss_function = params.get("loss_function", self.DEFAULTS["loss_function"])
     self.lr = params.get("learning_rate", self.DEFAULTS["learning_rate"])
     self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
 
@@ -108,18 +108,18 @@ class Trainer():
           #next_max_q_value, q_next_t
 
           # 6. Calculate Y_hat
-          y_hat = calculate_y_hat(buffer_batch.get_rewards(), next_max_q_value, buffer_batch.get_done() * 1).detach()
+          y_hat = Trainer.calculate_y_hat(buffer_batch.get_rewards(), next_max_q_value, buffer_batch.get_done() * 1).detach()
           #print(f"Do we require grad? {y_hat.requires_grad}")
 
           # 7. Loss function
-          loss = loss_function(current_q_value, y_hat)
+          loss = self.loss_function(current_q_value, y_hat)
           #print(current_q_value.type())
           #print(y_hat.type())
 
           # 8. Backpropagate to learn
-          optimizer.zero_grad()
+          self.optimizer.zero_grad()
           loss.backward()
-          optimizer.step()
+          self.optimizer.step()
 
         # 9. TODO: Do the evaluation every 500 steps
         # run in the env under greedy policy to get running reward
@@ -147,6 +147,7 @@ class Trainer():
 
     return rew_inter_arr, discounted_rew_arr
 
+  @staticmethod
   def calculate_y_hat(reward, max_next_q, done, gamma=0.99):
     return torch.Tensor([reward + gamma * (1 - done) * max_next_q.detach().numpy()])
   
