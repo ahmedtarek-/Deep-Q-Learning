@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 def eps_greedy(q, e):
   rand = np.random.uniform(0, 1)
