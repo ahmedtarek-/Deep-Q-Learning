@@ -125,7 +125,7 @@ class Trainer():
         # run in the env under greedy policy to get running reward
         if (counter % evaluate_at) == 0:
           with torch.no_grad():
-            rew_intermediate, discounted_rew, rollout_done = self.rollout_episode(self.policy, eval_steps)
+            rew_intermediate, discounted_rew, rollout_done = self.rollout_episode(policy, eval_steps)
             rew_inter_arr[int(counter / evaluate_at)] = rew_intermediate
             discounted_rew_arr[int(counter / evaluate_at)] = discounted_rew
             print(f"Intermediate reward at idx {int(counter / evaluate_at)} update is {rew_intermediate}")
