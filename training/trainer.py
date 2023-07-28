@@ -79,7 +79,7 @@ class Trainer():
         # 2. Decide which action to choose based on annealing epsilon greedy policy
         # TODO: # sigmoid schedule on the epsilon so we have more exploration. We need to do annealing for 80% of steps
         # Clipping
-        chosen_action, current_q_value = policy(q_t, e = epsilon(counter))
+        chosen_action, _ = policy(q_t, e = epsilon(counter))
         #print(f"Current q value is {current_q_value}")
 
         # 3. Take action/step and get reward and next state
@@ -102,6 +102,11 @@ class Trainer():
           #for _ in range(exp_buffer.DEFAULT_BATCH_SIZE):
           buffer_batch = exp_buffer.get_next()
 
+          q_current_t = self.model(buffer_batch.get_current_states())
+          #print(f"Current q shape: {q_current_t.shape}")
+          _, current_max_q_value = policy(q_current_t, e = epsilon(counter))
+          #print(f"Current q after policy shape: {current_max_q_value.shape}")
+
           q_next_t = self.model(buffer_batch.get_next_states()) # will be a matrix of Qs (buffer_size x num_actions)
           #print(q_next_t.shape)
 
@@ -115,7 +120,7 @@ class Trainer():
           #print(f"Do we require grad? {y_hat.requires_grad}")
 
           # 7. Loss function
-          loss = self.loss_function(current_q_value, y_hat)
+          loss = self.loss_function(y_hat, current_max_q_value)
           #print(current_q_value.type())
           #print(y_hat.type())
 
@@ -157,7 +162,8 @@ class Trainer():
 
   @staticmethod
   def calculate_y_hat(reward, max_next_q, done, gamma=0.99):
-    return torch.Tensor([reward + gamma * (1 - done) * max_next_q.detach().numpy()])
+    return reward.squeeze() + gamma * (torch.ones(done.shape[0]) - done.squeeze()) * max_next_q.detach()
+    #return torch.Tensor([reward + gamma * (1 - done) * max_next_q.detach().numpy()])
   
   def rollout_episode(self, policy, eval_steps, gamma = 0.99):
     self.model.eval()
@@ -165,7 +171,7 @@ class Trainer():
     discounter_reward = 0
     # TODO: should we really do reset of the env?
     # We need a separate testing environment!!!
-    env = gym.make(self.env_name)
+    env = self.create_env()
     current_state = env.reset()
 
     # Multiple episodes not steps!!! And avg discounted reward over episodes.
