@@ -14,7 +14,7 @@ class Result():
   def save(self, plot=False):
     # 1. Save model
     file_prefix = self.file_prefix()
-    model_path = self.MODELS_ROOT_DIR + "/" + self.parent_dir + "/" + file_prefix + ".pt"
+    model_path = self.MODELS_ROOT_DIR + "/" + self.parent_dir() + "/" + self.file_prefix() + ".pt"
 
     torch.save(self.model.state_dict(), model_path)
 
