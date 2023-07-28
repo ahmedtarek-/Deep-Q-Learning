@@ -65,7 +65,6 @@ class ExperienceBuffer():
     self.rewards[self.current_index] = reward
     self.next_states[self.current_index] = next_state
     self.done[self.current_index] = done
-    
     self.update_index()
 
   def update_index(self) -> None:
@@ -113,5 +112,6 @@ class ExperienceBuffer():
       Size: {self.size()}
       Current Index: {self.current_index}
       Shape: ({self.current_states.shape[1]},{self.actions.shape[1]},{self.rewards.shape[1]},{self.next_states.shape[1]}, {self.done.shape[1]})
+      Last Item: {self.items([self.current_index - 1])}
     """
 
