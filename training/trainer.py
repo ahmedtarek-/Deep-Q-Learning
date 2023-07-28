@@ -61,7 +61,7 @@ class Trainer:
       exp_buffer = ExperienceBuffer((sample_size,1,1,sample_size,1), batch_size = 1)
 
     # TODO: num of episodes * num_steps_in_episode = 20000
-    while True:
+    while counter < num_update_steps:
       current_state = env.reset()
       current_state_tensor = torch.Tensor(current_state.flatten())
 
@@ -141,7 +141,6 @@ class Trainer:
             print("num_update_steps: ", num_update_steps)
             print("counter: ", counter)
             print("evaluate_at: ", evaluate_at)
-            print("rollout_done: ", rollout_done)
             print("======= End Debug =========")
 
         # step counter
@@ -152,8 +151,9 @@ class Trainer:
           break
 
       # 11. Check if we're out of updating for good.
-      if counter >= num_update_steps:
-        break
+      # NO NEED cuz we have while condition
+      # if counter >= num_update_steps:
+      #   break
 
     return rew_inter_arr, discounted_rew_arr
 
