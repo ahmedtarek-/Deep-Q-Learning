@@ -1,6 +1,10 @@
 # Deep-Q-Learning
 
 
+### Our run Logs
+
+https://docs.google.com/spreadsheets/d/1MvHA6LFZp3fJmEH0HEZtHaHvY-t6ZD1kZYN6cjEYZj8
+
 
 ## Our TODOs
 
