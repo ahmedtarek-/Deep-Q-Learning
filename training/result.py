@@ -7,11 +7,15 @@ class Result():
   RESULTS_ROOT_DIR = "results"
   MODELS_DIR = RESULTS_ROOT_DIR + "/" + "models"
 
-  def __init__(self, model, rewards, disc_rewards, env_name):
+  def __init__(self, model, rewards, disc_rewards, config):
     self.model = model
     self.rewards = rewards
     self.disc_rewards = disc_rewards
-    self.env_name = env_name
+    self.env_name = config["env_name"]
+    self.num_update_steps = config["num_update_steps"]
+    self.exp_replay = config["exp_replay"]
+    self.learning_rate = config["learning_rate"]
+    self.gamma = config["gamma"]
 
   def save(self, plot=False):
     # 1. Save model
@@ -27,6 +31,12 @@ class Result():
 
     if plot:
       plt.plot(self.rewards)
+      plt.title(
+        "[{}][Gamma = {}][LR = {}][ER = {}] Reward evolution during training"
+          .format(self.env_name, self.gamma, self.learning_rate, self.exp_replay)
+      )
+      plt.xlabel("Iterations")
+      plt.ylabel("Reward")
       root = "../results/plots/"
 
       if not os.path.exists(root):
