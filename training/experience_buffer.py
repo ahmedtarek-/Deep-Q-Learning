@@ -112,6 +112,5 @@ class ExperienceBuffer():
       Size: {self.size()}
       Current Index: {self.current_index}
       Shape: ({self.current_states.shape[1]},{self.actions.shape[1]},{self.rewards.shape[1]},{self.next_states.shape[1]}, {self.done.shape[1]})
-      Last Item: {self.items([self.current_index - 1])}
     """
 

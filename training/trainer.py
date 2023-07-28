@@ -118,7 +118,6 @@ class Trainer:
 
           # 6. Calculate Y_hat
           y_hat = Trainer.calculate_y_hat(buffer_batch.get_rewards(), next_max_q_value, buffer_batch.get_done() * 1, gamma=gamma).detach()
-          #print(f"Do we require grad? {y_hat.requires_grad}")
 
           # 7. Loss function
           loss = self.loss_function(y_hat, current_max_q_value)
@@ -144,6 +143,8 @@ class Trainer:
             print("num_update_steps: ", num_update_steps)
             print("counter: ", counter)
             print("evaluate_at: ", evaluate_at)
+            print("y_hat shape", y_hat.shape)
+            print("current_max_q_value shape", current_max_q_value.shape)
             print("-- [exp_replay]", exp_buffer)
             print("======= End Debug =========")
 
