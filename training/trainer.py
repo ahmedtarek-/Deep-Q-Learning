@@ -20,7 +20,8 @@ class Trainer():
     'num_update_steps': 20000,
     'num_episodes': 50,
     'eval_steps': 20,
-    'evaluate_at': 500
+    'evaluate_at': 500,
+    'debug': False
   }
 
   def __init__(self, **params: dict) -> None:
@@ -40,6 +41,8 @@ class Trainer():
     policy = params.get("policy", self.DEFAULTS["policy"])
     eval_steps = params.get("eval_steps", self.DEFAULTS["eval_steps"])
     evaluate_at = params.get("evaluate_at", self.DEFAULTS["evaluate_at"])
+
+    debug = params.get("debug", self.DEFAULTS["evaluate_at"])
 
     # episodes num = 50/100 and updates = 20000/100000
     #for update_step in range(num_update_steps):
@@ -130,7 +133,12 @@ class Trainer():
             discounted_rew_arr[int(counter / evaluate_at)] = discounted_rew
             print(f"Intermediate reward at idx {int(counter / evaluate_at)} update is {rew_intermediate}")
             print(f"Discounted reward at idx {int(counter / evaluate_at)} update is {discounted_rew}")
-
+          if debug:
+            print("======= Debug =========")
+            print("counter: ", counter)
+            print("evaluate_at: ", evaluate_at)
+            print("rollout_done: ", rollout_done)
+            print("======= End Debug =========")
           if rollout_done:
             break
 
@@ -162,16 +170,16 @@ class Trainer():
 
     # Multiple episodes not steps!!! And avg discounted reward over episodes.
     for _ in range(eval_steps):
-        # use the epsilon greedy policy with a ver small epsilon = 0.01
-        q = self.model(torch.Tensor(current_state.flatten()))
-        action, _ = policy(q, e = 0.01)
-        new_state, rew , done, _ = env.step(action)
-        rew_total += rew
-        discounter_reward += rew * gamma
-        current_state = torch.Tensor(new_state.flatten())
+      # use the epsilon greedy policy with a ver small epsilon = 0.01
+      q = self.model(torch.Tensor(current_state.flatten()))
+      action, _ = policy(q, e = 0.01)
+      new_state, rew , done, _ = env.step(action)
+      rew_total += rew
+      discounter_reward += rew * gamma
+      current_state = torch.Tensor(new_state.flatten())
 
-        if done:
-            break
+      if done:
+        break
 
     self.model.train()
     return rew_total, discounter_reward, done
