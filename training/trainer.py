@@ -146,14 +146,14 @@ class Trainer:
         # step counter
         counter +=1
 
-        # 10. Check if we terminate an episode due to one of the termination conditions
-        if done:
+        # 11. Check if we're out of updating for good.
+        if done or counter >= num_update_steps:
           break
+        
+        # 10. Check if we terminate an episode due to one of the termination conditions
+        # if done:
+        #   break
 
-      # 11. Check if we're out of updating for good.
-      # NO NEED cuz we have while condition
-      # if counter >= num_update_steps:
-      #   break
 
     return rew_inter_arr, discounted_rew_arr
 
