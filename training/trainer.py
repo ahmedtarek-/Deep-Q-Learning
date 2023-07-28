@@ -21,7 +21,8 @@ class Trainer:
     'num_episodes': 50,
     'eval_steps': 20,
     'evaluate_at': 500,
-    'debug': False
+    'debug': False,
+    'gamma': 0.99
   }
 
   def __init__(self, **params: dict) -> None:
@@ -41,7 +42,7 @@ class Trainer:
     policy = params.get("policy", self.DEFAULTS["policy"])
     eval_steps = params.get("eval_steps", self.DEFAULTS["eval_steps"])
     evaluate_at = params.get("evaluate_at", self.DEFAULTS["evaluate_at"])
-
+    gamma = params.get("gamma", self.DEFAULTS["gamma"])
     debug = params.get("debug", self.DEFAULTS["debug"])
 
     # episodes num = 50/100 and updates = 20000/100000
@@ -114,7 +115,7 @@ class Trainer:
           #next_max_q_value, q_next_t
 
           # 6. Calculate Y_hat
-          y_hat = Trainer.calculate_y_hat(buffer_batch.get_rewards(), next_max_q_value, buffer_batch.get_done() * 1).detach()
+          y_hat = Trainer.calculate_y_hat(buffer_batch.get_rewards(), next_max_q_value, buffer_batch.get_done() * 1, gamma=gamma).detach()
           #print(f"Do we require grad? {y_hat.requires_grad}")
 
           # 7. Loss function

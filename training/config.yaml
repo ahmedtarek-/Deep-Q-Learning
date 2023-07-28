@@ -1,4 +1,8 @@
 training_config:
   learning_rate: 0.001
-  experience_replay: false
   env_name: 'LinearTrack-v0'
+  num_update_steps: 20000
+  eval_steps: 500
+  exp_replay: true
+  debug: true
+  gamma: 0.99

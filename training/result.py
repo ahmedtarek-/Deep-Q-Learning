@@ -27,12 +27,12 @@ class Result():
 
     if plot:
       plt.plot(self.rewards)
-      root = "../plots/"
+      root = "../results/plots/"
 
       if not os.path.exists(root):
         os.mkdir(root)
       
-      plt.savefig(root + file_prefix + ".png")
+      plt.savefig(root + file_prefix + self.env_name + ".png")
 
   def file_prefix(self):
     now = datetime.now()
