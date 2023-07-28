@@ -90,7 +90,8 @@ class Trainer:
         # 4(a). Store in experence replay buffer:
         #print(current_state_tensor)
         exp_buffer.add(current_state_tensor, chosen_action, reward, next_state_tensor, done)
-        print("-- [exp_replay] current_index: ", buffer_batch.current_index) if counter <= exp_buffer.batch_size:
+        if counter <= exp_buffer.batch_size:
+          print("-- [exp_replay] current_index: ", buffer_batch.current_index)
 
         # Important previously: current_state_tensor = next_state_tensor
         current_state_tensor = next_state_tensor
