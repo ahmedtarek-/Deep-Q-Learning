@@ -137,7 +137,7 @@ class Trainer:
             print(f"Intermediate reward at idx {int(counter / evaluate_at)} update is {rew_intermediate}")
             print(f"Discounted reward at idx {int(counter / evaluate_at)} update is {discounted_rew}")
           if debug:
-            print("======= Debug =========")
+            print("\n======= Debug =========")
             print("num_update_steps: ", num_update_steps)
             print("counter: ", counter)
             print("evaluate_at: ", evaluate_at)
