@@ -14,12 +14,12 @@ class Result():
   def save(self, plot=False):
     # 1. Save model
     file_prefix = self.file_prefix()
-    model_path = MODELS_ROOT_DIR + "/" + self.parent_dir + "/" + file_prefix + ".pt"
+    model_path = self.MODELS_ROOT_DIR + "/" + self.parent_dir + "/" + file_prefix + ".pt"
 
     torch.save(self.model.state_dict(), model_path)
 
     if plot:
-      plt.plot(rewards)
+      plt.plot(self.rewards)
       plt.savefig("plots" + "/" + file_prefix + ".png")
 
   def file_prefix(self):
@@ -28,4 +28,4 @@ class Result():
     return dt_string + "_model"
 
   def parent_dir(self):
-    return "1d_track" if env_name == "LinearTrack-v0" else "2d_track"
+    return "1d_track" if self.env_name == "LinearTrack-v0" else "2d_track"
