@@ -4,7 +4,7 @@ from datetime import datetime
 
 class Result():
   RESULTS_ROOT_DIR = "results"
-  MODELS_DIR = RESULTS_ROOT_DIR + "/" + "models"
+  MODELS_DIR = self.RESULTS_ROOT_DIR + "/" + "models"
 
   def __init__(self, model, rewards, disc_rewards, env_name):
     self.model = model
@@ -21,7 +21,7 @@ class Result():
 
     if plot:
       plt.plot(self.rewards)
-      plt.savefig(RESULTS_ROOT_DIR + "/" + "plots" + "/" + self.file_prefix() + ".png")
+      plt.savefig(self.RESULTS_ROOT_DIR + "/" + "plots" + "/" + self.file_prefix() + ".png")
 
   def file_prefix(self):
     now = datetime.now()
