@@ -5,7 +5,7 @@ import os
 
 class Result():
   RESULTS_ROOT_DIR = "results"
-  MODELS_DIR = self.RESULTS_ROOT_DIR + "/" + "models"
+  MODELS_DIR = RESULTS_ROOT_DIR + "/" + "models"
 
   def __init__(self, model, rewards, disc_rewards, env_name):
     self.model = model
