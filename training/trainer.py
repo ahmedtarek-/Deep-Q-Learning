@@ -10,7 +10,7 @@ from policies import eps_greedy
 
 from experience_buffer import ExperienceBuffer
 
-class Trainer():
+class Trainer:
 
   DEFAULTS = {
     'loss_function': nn.MSELoss(),
@@ -42,7 +42,7 @@ class Trainer():
     eval_steps = params.get("eval_steps", self.DEFAULTS["eval_steps"])
     evaluate_at = params.get("evaluate_at", self.DEFAULTS["evaluate_at"])
 
-    debug = params.get("debug", self.DEFAULTS["evaluate_at"])
+    debug = params.get("debug", self.DEFAULTS["debug"])
 
     # episodes num = 50/100 and updates = 20000/100000
     #for update_step in range(num_update_steps):
@@ -61,15 +61,13 @@ class Trainer():
       exp_buffer = ExperienceBuffer((sample_size,1,1,sample_size,1), batch_size = 1)
 
     # TODO: num of episodes * num_steps_in_episode = 20000
-    while counter < num_update_steps:
-      #print(update_step)
+    while True:
       current_state = env.reset()
       current_state_tensor = torch.Tensor(current_state.flatten())
 
       # TODO: num steps in the episode = 50
       # num episodes is not fixed!
       for _ in range(num_episodes):
-
         # 1. Forward pass on NN to get the Q(t)
         # Not to reset current_state_tensor at every pass of for loop
         # if idx == 0:
@@ -133,7 +131,7 @@ class Trainer():
         # run in the env under greedy policy to get running reward
         if (counter % evaluate_at) == 0:
           with torch.no_grad():
-            rew_intermediate, discounted_rew, rollout_done = self.rollout_episode(policy, eval_steps)
+            rew_intermediate, discounted_rew, _ = self.rollout_episode(policy, eval_steps)
             rew_inter_arr[int(counter / evaluate_at)] = rew_intermediate
             discounted_rew_arr[int(counter / evaluate_at)] = discounted_rew
             print(f"Intermediate reward at idx {int(counter / evaluate_at)} update is {rew_intermediate}")
@@ -144,8 +142,6 @@ class Trainer():
             print("evaluate_at: ", evaluate_at)
             print("rollout_done: ", rollout_done)
             print("======= End Debug =========")
-          if rollout_done:
-            break
 
         # step counter
         counter +=1
@@ -154,9 +150,9 @@ class Trainer():
         if done:
           break
 
-        # 11. Check if we're out of updating for good.
-        if counter >= num_update_steps:
-          break
+      # 11. Check if we're out of updating for good.
+      if counter >= num_update_steps:
+        break
 
     return rew_inter_arr, discounted_rew_arr
 
