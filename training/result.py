@@ -1,6 +1,7 @@
 import torch
 import matplotlib.pyplot as plt
 from datetime import datetime
+import os
 
 class Result():
   RESULTS_ROOT_DIR = "results"
@@ -15,13 +16,23 @@ class Result():
   def save(self, plot=False):
     # 1. Save model
     file_prefix = self.file_prefix()
-    model_path = self.MODELS_DIR + "/" + self.parent_dir() + "/" + self.file_prefix() + ".pt"
+    root = "../" + self.MODELS_DIR + "/" + self.parent_dir()
+
+    if not os.path.exists(root):
+      os.mkdir(root)
+
+    model_path = root + "/" + self.file_prefix() + ".pt"
 
     torch.save(self.model.state_dict(), model_path)
 
     if plot:
       plt.plot(self.rewards)
-      plt.savefig(self.RESULTS_ROOT_DIR + "/" + "plots" + "/" + self.file_prefix() + ".png")
+      root = "../plots/"
+
+      if not os.path.exists(root):
+        os.mkdir(root)
+      
+      plt.savefig(root + file_prefix + ".png")
 
   def file_prefix(self):
     now = datetime.now()
