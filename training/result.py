@@ -4,7 +4,8 @@ from datetime import datetime
 import os
 
 class Result():
-  MODELS_ROOT_DIR = "models"
+  RESULTS_ROOT_DIR = "results"
+  MODELS_DIR = self.RESULTS_ROOT_DIR + "/" + "models"
 
   def __init__(self, model, rewards, disc_rewards, env_name):
     self.model = model
@@ -15,7 +16,7 @@ class Result():
   def save(self, plot=False):
     # 1. Save model
     file_prefix = self.file_prefix()
-    root = "../" + self.MODELS_ROOT_DIR + "/" + self.parent_dir()
+    root = "../" + self.MODELS_DIR + "/" + self.parent_dir()
 
     if not os.path.exists(root):
       os.mkdir(root)
