@@ -45,8 +45,6 @@ class Trainer:
     gamma = params.get("gamma", self.DEFAULTS["gamma"])
     debug = params.get("debug", self.DEFAULTS["debug"])
 
-    print(f"Gamma is {gamma}")
-
     # episodes num = 50/100 and updates = 20000/100000
     #for update_step in range(num_update_steps):
     main_env = self.create_env()
@@ -56,7 +54,7 @@ class Trainer:
     sample_size = np.prod(main_env.observation_space.shape)
 
     # So epsilon decays only in 80% of the steps and in first 20% of the steps it stays exploratative
-    epsilon = lambda count: 1 * (1 - ((count + 1) / num_update_steps)) if count >= 0.2 * num_update_steps else 1
+    epsilon = lambda count: 1 * (1 - ((count - 0.2 * num_update_steps) / num_update_steps)) if count >= 0.2 * num_update_steps else 1
     print(f"Do we use experience replay? {exp_replay}")
     if exp_replay:
       exp_buffer = ExperienceBuffer((sample_size,1,1,sample_size,1))
@@ -94,9 +92,7 @@ class Trainer:
         # 4(a). Store in experence replay buffer:
         #print(current_state_tensor)
         exp_buffer.add(current_state_tensor, chosen_action, reward, next_state_tensor, done)
-        if counter <= exp_buffer.batch_size:
-          print("-- [exp_replay] current_index: ", exp_buffer.current_index)
-
+      
         # Important previously: current_state_tensor = next_state_tensor
         current_state_tensor = next_state_tensor
 
