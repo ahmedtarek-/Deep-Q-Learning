@@ -143,7 +143,7 @@ class Trainer:
             print("num_update_steps: ", num_update_steps)
             print("counter: ", counter)
             print("evaluate_at: ", evaluate_at)
-            if y_hat is not None:
+            if counter >= exp_buffer.batch_size:
               print("y_hat shape", y_hat.shape)
               print("current_max_q_value shape", current_max_q_value.shape)
             print("-- [exp_replay]", exp_buffer)
