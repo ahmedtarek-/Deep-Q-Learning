@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 class Result():
-  MODELS_ROOT_DIR = "models"
+  RESULTS_ROOT_DIR = "results"
+  MODELS_DIR = RESULTS_ROOT_DIR + "/" + "models"
 
   def __init__(self, model, rewards, disc_rewards, env_name):
     self.model = model
@@ -14,13 +15,13 @@ class Result():
   def save(self, plot=False):
     # 1. Save model
     file_prefix = self.file_prefix()
-    model_path = self.MODELS_ROOT_DIR + "/" + self.parent_dir() + "/" + self.file_prefix() + ".pt"
+    model_path = self.MODELS_DIR + "/" + self.parent_dir() + "/" + self.file_prefix() + ".pt"
 
     torch.save(self.model.state_dict(), model_path)
 
     if plot:
       plt.plot(self.rewards)
-      plt.savefig("plots" + "/" + file_prefix + ".png")
+      plt.savefig(RESULTS_ROOT_DIR + "/" + "plots" + "/" + self.file_prefix() + ".png")
 
   def file_prefix(self):
     now = datetime.now()
