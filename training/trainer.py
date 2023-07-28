@@ -94,6 +94,8 @@ class Trainer:
         # 4(a). Store in experence replay buffer:
         #print(current_state_tensor)
         exp_buffer.add(current_state_tensor, chosen_action, reward, next_state_tensor, done)
+        if counter <= exp_buffer.batch_size:
+          print("-- [exp_replay] current_index: ", exp_buffer.current_index)
 
         # Important previously: current_state_tensor = next_state_tensor
         current_state_tensor = next_state_tensor
@@ -119,7 +121,6 @@ class Trainer:
 
           # 6. Calculate Y_hat
           y_hat = Trainer.calculate_y_hat(buffer_batch.get_rewards(), next_max_q_value, buffer_batch.get_done() * 1, gamma=gamma).detach()
-          #print(f"Y hat shape {y_hat.shape}")
 
           # 7. Loss function
           loss = self.loss_function(y_hat, current_max_q_value)
@@ -143,6 +144,10 @@ class Trainer:
             print("num_update_steps: ", num_update_steps)
             print("counter: ", counter)
             print("evaluate_at: ", evaluate_at)
+            if counter >= exp_buffer.batch_size:
+              print("y_hat shape", y_hat.shape)
+              print("current_max_q_value shape", current_max_q_value.shape)
+            print("-- [exp_replay]", exp_buffer)
             print("======= End Debug =========")
 
         # step counter

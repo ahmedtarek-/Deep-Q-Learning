@@ -65,7 +65,6 @@ class ExperienceBuffer():
     self.rewards[self.current_index] = reward
     self.next_states[self.current_index] = next_state
     self.done[self.current_index] = done
-    
     self.update_index()
 
   def update_index(self) -> None:
