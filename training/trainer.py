@@ -138,6 +138,7 @@ class Trainer:
             print(f"Discounted reward at idx {int(counter / evaluate_at)} update is {discounted_rew}")
           if debug:
             print("======= Debug =========")
+            print("num_update_steps: ", num_update_steps)
             print("counter: ", counter)
             print("evaluate_at: ", evaluate_at)
             print("rollout_done: ", rollout_done)
