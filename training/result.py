@@ -30,19 +30,22 @@ class Result():
     torch.save(self.model.state_dict(), model_path)
 
     if plot:
-      plt.plot(self.rewards)
+      plt.plot(self.rewards, label="cumulative")
+      plt.plot(self.disc_rewards, label="discounted")
       plt.title(
         "[{}][Gamma = {}][LR = {}][ER = {}] Reward evolution during training"
           .format(self.env_name, self.gamma, self.learning_rate, self.exp_replay)
       )
       plt.xlabel("Iterations")
       plt.ylabel("Reward")
-      root = "../results/plots/"
+      plt.legend()
+
+      root = "../results/plots/" + self.parent_dir() + "/"
 
       if not os.path.exists(root):
         os.mkdir(root)
       
-      plt.savefig(root + file_prefix + self.env_name + ".png")
+      plt.savefig(root + file_prefix + ".png")
 
   def file_prefix(self):
     now = datetime.now()

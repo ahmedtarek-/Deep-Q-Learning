@@ -1,0 +1,10 @@
+training_config:
+  learning_rate: 0.001
+  exp_replay: true
+  env_name: 'DeadlyGrid-v0'
+  eval_steps: 40
+  evaluate_at: 1000
+  num_episodes: 100
+  debug: true
+  num_update_steps: 100000
+  gamma: 0.99
