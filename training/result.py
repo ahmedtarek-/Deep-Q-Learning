@@ -20,7 +20,7 @@ class Result():
   def save(self, plot=False):
     # 1. Save model
     file_prefix = self.file_prefix()
-    root = "../" + self.MODELS_DIR + "/" + self.parent_dir()
+    root = self.MODELS_DIR + "/" + self.parent_dir()
 
     if not os.path.exists(root):
       os.mkdir(root)
@@ -40,7 +40,7 @@ class Result():
       plt.ylabel("Reward")
       plt.legend()
 
-      root = "../results/plots/" + self.parent_dir() + "/"
+      root = "results/plots/" + self.parent_dir() + "/"
 
       if not os.path.exists(root):
         os.mkdir(root)
