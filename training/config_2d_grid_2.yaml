@@ -3,8 +3,8 @@ training_config:
   exp_replay: true
   env_name: 'DeadlyGrid-v0'
   eval_steps: 30
-  evaluate_at: 1000
+  evaluate_at: 2000
   num_episodes: 100
   debug: false
-  num_update_steps: 100000
+  num_update_steps: 1000000
   gamma: 0.99
