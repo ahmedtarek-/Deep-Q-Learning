@@ -134,7 +134,7 @@ class Trainer:
         # run in the env under greedy policy to get running reward
         if (counter % evaluate_at) == 0:
           with torch.no_grad():
-            rew_intermediate, discounted_rew, _ = self.rollout_episode(policy, eval_steps, gamma=gamma)
+            rew_intermediate, discounted_rew = self.rollout_episode(policy, eval_steps, gamma=gamma)
             rew_inter_arr[int(counter / evaluate_at)] = rew_intermediate
             discounted_rew_arr[int(counter / evaluate_at)] = discounted_rew
             print(f"Intermediate reward at idx {int(counter / evaluate_at)} update is {rew_intermediate}")
@@ -169,30 +169,35 @@ class Trainer:
     return reward.squeeze() + gamma * (torch.ones(done.shape[0]) - done.squeeze()) * max_next_q.detach()
     #return torch.Tensor([reward + gamma * (1 - done) * max_next_q.detach().numpy()])
   
-  def rollout_episode(self, policy, eval_steps, gamma = 0.99):
+  def rollout_episode(self, policy, eval_steps, eval_episodes = 3, gamma = 0.99):
     self.model.eval()
-    rew_total = 0
-    discounter_reward = 0
+    rewards = []
+    d_rewards = []
     # TODO: should we really do reset of the env?
     # We need a separate testing environment!!!
     test_env = self.create_env()
-    current_state = test_env.reset()
 
-    # Multiple episodes not steps!!! And avg discounted reward over episodes.
-    for t in range(eval_steps):
-      # use the epsilon greedy policy with a ver small epsilon = 0.01
-      q = self.model(torch.Tensor(current_state.flatten()))
-      action, _ = policy(q, e = 0.01)
-      new_state, rew , done, _ = test_env.step(action)
-      rew_total += rew
-      discounter_reward += rew * pow(gamma, t)
-      current_state = torch.Tensor(new_state.flatten())
+    for _ in range(eval_episodes):
+      reward = 0
+      d_reward = 0
+      current_state = test_env.reset()
 
-      if done:
-        break
+      # Multiple episodes not steps!!! And avg discounted reward over episodes.
+      for t in range(eval_steps):
+        # use the epsilon greedy policy with a ver small epsilon = 0.01
+        q = self.model(torch.Tensor(current_state.flatten()))
+        action, _ = policy(q, e = 0.01)
+        new_state, rew , done, _ = test_env.step(action)
+        reward += rew
+        d_reward += rew * pow(gamma, t)
+        current_state = torch.Tensor(new_state.flatten())
+        if done:
+          break
+      rewards.append(reward)
+      d_rewards.append(d_reward)
 
     self.model.train()
-    return rew_total, discounter_reward, done
+    return np.mean(rewards), np.mean(d_rewards)
 
   def create_env(self):
     return gym.make(self.env_name)
