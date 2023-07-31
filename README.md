@@ -25,9 +25,16 @@ https://docs.google.com/spreadsheets/d/1MvHA6LFZp3fJmEH0HEZtHaHvY-t6ZD1kZYN6cjEY
 pip install -r requirements.txt
 ```
 
+2. Update the `training/config.yaml` file with desired config
 
 
-### Option 2: Use the provided notebook
+3. Run main.py
+```bash
+python main.py
+```
+
+
+### Option 2: Use the provided notebook (RECOMMENDED)
 
 Under `notebooks` you will find some useful notebooks.
 
